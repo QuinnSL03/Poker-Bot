@@ -40,7 +40,6 @@ class Pot:
         self.players = players
 
     def find_winner(self):
-        i = 1
         winner = self.players[0]
         win_condition = ""
         if len(self.players) == 1:
@@ -49,7 +48,7 @@ class Pot:
         b = game.reformat_card(self.players[0].hand[1])
         max = [a,b] + game.formatted_table 
         player_winner = self.players[0]
-        while i < len(self.players):
+        for i in range(len(self.players)):
             a = game.reformat_card(self.players[i].hand[0])
             b = game.reformat_card(self.players[i].hand[1])
             next = [a,b] + game.formatted_table
@@ -63,7 +62,6 @@ class Pot:
                 max = next
                 player_winner = self.players[i]
             win_condition = result[1]
-            i += 1
         return [player_winner, win_condition]
         
         
@@ -201,10 +199,8 @@ class Poker:
             #pre-flop
             a = ['Qd', 'Kd', '9d', 'Jd', 'Td', '4h', '5c'] 
             b = ['Qd', 'Kd', '9d', 'Jd', 'Td', 'Ad', '5c'] 
-            await channel.send(handeval.compare_hands(a,b))
             print("start 1")
-            await channel.send("The Pre-Flop:")
-            await channel.send(top + "\t" + top + "\t" + top + "\t" + top + "\t" + top + "\n"
+            await channel.send(handeval.compare_hands(a,b) + "\nThe Pre-Flop: \n" + top + "\t" + top + "\t" + top + "\t" + top + "\t" + top + "\n"
             + bot + "\t" + bot + "\t" + bot + "\t" + bot + "\t" + bot)
             await asyncio.sleep(.1)
             await run_menu()
@@ -217,8 +213,7 @@ class Poker:
             table_card1 = self.find_card_emoji(self.table_cards[0])
             table_card2 = self.find_card_emoji(self.table_cards[1])
             table_card3 = self.find_card_emoji(self.table_cards[2])
-            await channel.send("The Flop:")
-            await channel.send(table_card1[0] + "\t" + table_card2[0] + "\t" + table_card3[0] + "\t" + top + "\t" + top + "\n"
+            await channel.send("The Flop:\n" + table_card1[0] + "\t" + table_card2[0] + "\t" + table_card3[0] + "\t" + top + "\t" + top + "\n"
             + table_card1[1] + "\t" + table_card2[1] + "\t" + table_card3[1] + "\t" + bot + "\t" + bot)
             await asyncio.sleep(.1)
             await run_menu()
@@ -230,8 +225,7 @@ class Poker:
             table_card2 = self.find_card_emoji(self.table_cards[1])
             table_card3 = self.find_card_emoji(self.table_cards[2])
             table_card4 = self.find_card_emoji(self.table_cards[3])
-            await channel.send("The Turn:")
-            await channel.send(table_card1[0] + "\t" + table_card2[0] + "\t" + table_card3[0] + "\t" + table_card4[0] + "\t" + top + "\n"
+            await channel.send("The Turn:\n" + table_card1[0] + "\t" + table_card2[0] + "\t" + table_card3[0] + "\t" + table_card4[0] + "\t" + top + "\n"
             + table_card1[1] + "\t" + table_card2[1] + "\t" + table_card3[1] + "\t" + table_card4[1] + "\t" + bot)
             await asyncio.sleep(.1)
             await run_menu()
@@ -245,8 +239,7 @@ class Poker:
             table_card4 = self.find_card_emoji(self.table_cards[3])
             table_card5 = self.find_card_emoji(self.table_cards[4])
         
-            await channel.send("The River:")
-            await channel.send(table_card1[0] + "\t" + table_card2[0] + "\t" + table_card3[0] + "\t" + table_card4[0] + "\t" + table_card5[0] + "\n"
+            await channel.send("The River:\n" + table_card1[0] + "\t" + table_card2[0] + "\t" + table_card3[0] + "\t" + table_card4[0] + "\t" + table_card5[0] + "\n"
             + table_card1[1] + "\t" + table_card2[1] + "\t" + table_card3[1] + "\t" + table_card4[1] + "\t" + table_card5[1])
             await asyncio.sleep(.1)
             await run_menu()
@@ -255,15 +248,10 @@ class Poker:
         else:
             for card in self.table_cards:
                 self.formatted_table.append(self.reformat_card(card))
-            await channel.send(self.main_pot.find_winner())
-            winner = self.main_pot.find_winner()
-            await channel.send(self.main_pot.players)
-            await channel.send(winner[0].player_obj.display_name)
-            await channel.send(winner[1])
+            winner = self.main_pot.find_winner() # why not use winner variable for line below?
             winner_card1 = self.find_card_emoji(winner[0].hand[0])
             winner_card2 = self.find_card_emoji(winner[0].hand[1])
-            await channel.send("Winning Hand:")
-            await channel.send(winner_card1[0] + "\t" + winner_card2[0] + "\n" + winner_card1[1] + "\t" + winner_card2[1])
+            await channel.send(self.main_pot.find_winner() + "\n" + self.main_pot.players + "\n" + winner[0].player_obj.display_name + "\n" + winner[1] + "\nWinning Hand:\n" + winner_card1[0] + "\t" + winner_card2[0] + "\n" + winner_card1[1] + "\t" + winner_card2[1])
             global game
             game = None
             
@@ -351,13 +339,11 @@ class Menu(discord.ui.View):
         
     @discord.ui.button(label="View Hand", style = discord.ButtonStyle.blurple)
     async def get_hand(self, interaction: discord.Interaction, button: discord.ui.Button):
-        i = 0
-        while i < len(game.players):
+        for i in range(len(game.players)):
             if game.players[i].player_obj.id == interaction.user.id:
                 card1 = game.find_card_emoji(game.players[i].hand[0])
                 card2 = game.find_card_emoji(game.players[i].hand[1])
                 await interaction.response.send_message("\n" + card1[0] + "\t" + card2[0] + "\n" + card1[1] + "\t" + card2[1], ephemeral=True)
-            i += 1
 
     @discord.ui.button(label="Call", style = discord.ButtonStyle.green)
     async def call(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -451,6 +437,3 @@ async def run_game(game):
 
 token = 'MTE3NTg2ODQ2ODQ0NTMxOTI3OQ.G5_mwv.aw07xFgox5i4hwX-mjpq64TEbfSd9HJ1vthotY'
 client.run(token)
-
-
-

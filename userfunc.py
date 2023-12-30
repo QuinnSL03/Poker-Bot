@@ -19,7 +19,7 @@ def write_balance(id, bal):
     line = None
     lines = None
 
-    data = str(id) + ";" + str(bal) + "-"
+    data = str(id) + ":" + str(bal) + "-"
     
     #Find line that contains this account
     with open("data.text", "r") as file:
@@ -69,7 +69,3 @@ def return_board():
             data.append([line[:line.index(":")], line[line.index(":")+1:line.index("-")]])
     print(data)
     return data
-
-        
-
-
