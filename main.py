@@ -21,7 +21,6 @@ message_start = None
 game_start = False
 game = None
 
-
 class Player: 
 
     def __init__(self, player_obj, hand, bal):
@@ -64,10 +63,9 @@ class Pot:
             win_condition = result[1]
         return [player_winner, win_condition]
         
-        
-            
 class Poker:
 
+    # I didn't read through everything so I'm not sure if I missed something, but you already defined top and bot global variables
     back_card_top = ":blankbacktop:714565166070759454" 
     back_card_bottom = ":blankbackbot:714565093798576455"
     
@@ -97,9 +95,6 @@ class Poker:
     "bQc", "bQs", "rQh", "rQd",
     "bKc", "bKs", "rKh", "rKd"]
     
-    
-    
-    
     def __init__(self, players, blind, buy_in, channel):
         self.active_deck = self.deck.copy()
         self.players = []
@@ -119,7 +114,6 @@ class Poker:
         self.turns_left = []
         self.formatted_table = []
         self.i = 0
-        
         
     def find_card_emoji(self, card):
         a = card[:2]
@@ -287,7 +281,6 @@ class Poker:
         self.round += 1
         
         await self.start_round(channel)
-        
 
 @client.command()
 async def load(ctx):
@@ -303,7 +296,6 @@ async def load(ctx):
             #await channel.send("already contains " + str(member.id))
     uf.write_new_users(users_data)
        
-
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
@@ -380,16 +372,27 @@ class Menu(discord.ui.View):
 @client.event
 async def on_message(message):
     if message.channel.id == 732386342402785418:
+        if message.content.startswith('hi'):
+            await message.channel.send("hi")
+        if message.content.startswith('hello'):
+            await message.channel.send("hi")
+        if message.content.startswith('aidan'):
+            aidan = "aidan " * 300
+            await message.channel.send(aidan)
+
         if message.author == client.user:
             return
-        if message.content.startswith('$p'):
-            global channel
-            channel = message.channel
-            print(type(game))
-            if game is not None:
-                print(game.table_cards)
-            
-            await lobby(message)
+
+        if not message.content.startswith('$p'):
+            return
+
+        global channel
+        channel = message.channel
+        print(type(game))
+        if game is not None:
+            print(game.table_cards)
+        await lobby(message)
+
         if message.content.startswith('$bal'):
             await message.channel.send(message.author.display_name + "'s balance: " + uf.get_balance(message.author.id))
         if message.content.startswith("$ls"):
@@ -401,14 +404,7 @@ async def on_message(message):
             await message.channel.send(board) 
         if message.content.startswith("$help"):
             await message.channel.send("* $p - starts game\n* $bal - returns your balance\n* $ls - leaderboard of users in the server")
-        if message.content.startswith('hi'):
-            await message.channel.send("hi")
-        if message.content.startswith('hello'):
-            await message.channel.send("hi")
-        if message.content.startswith('aidan'):
-            aidan = "aidan " * 300
-            await message.channel.send(aidan)
-        await client.process_commands(message)
+       await client.process_commands(message)
             
 async def lobby(message_start):
     ##ex = discord.utils.get(client.emojis, name='rQ')
@@ -431,9 +427,6 @@ async def run_game(game):
     print("dealing")
     game.deal_players()
     await game.start_round(channel)
-
-            
-            
 
 token = os.getenv('poker_bot_key')
 client.run(token)
